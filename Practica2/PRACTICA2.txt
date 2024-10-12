@@ -1,0 +1,266 @@
+R1
+enable
+conf t
+no ip domain-lookup
+hostname R1
+do wr
+
+int s0/0
+ip address 10.0.0.1 255.255.255.252
+no shut
+
+interface f0/0
+ip address 182.168.1.2 255.255.255.248
+no shutdown
+
+interface f0/1
+ip address 182.168.2.2 255.255.255.248
+no shutdown
+
+do wr
+
+-----------------------------------------
+R2
+enable
+conf t
+no ip domain-lookup
+hostname R2
+do wr
+
+interface f0/0
+ip address 182.168.1.1 255.255.255.248
+no shutdown
+
+interface f0/1
+ip address 182.168.0.2 255.255.255.0
+standby 10 ip 182.168.0.1   
+standby 10 priority 150
+standby 10 preempt
+no shutdown
+
+do wr
+
+-------------------------------------------
+R3
+enable
+conf t
+no ip domain-lookup
+hostname R3
+do wr
+
+interface f0/0
+ip address 182.168.2.1 255.255.255.248
+no shutdown
+
+interface f0/1
+ip address 182.168.0.3 255.255.255.0
+standby 10 ip 182.168.0.1  
+no shutdown
+
+do wr
+
+--------------------------------------------
+R4
+enable
+conf t
+no ip domain-lookup
+hostname R4
+do wr
+
+int s0/0
+ip address 10.0.0.2 255.255.255.252
+no shut
+
+interface f0/0
+ip address 182.178.1.1 255.255.255.248
+no shutdown
+
+interface f0/1
+ip address 182.178.2.1 255.255.255.248
+no shutdown
+
+do wr
+
+--------------------------------------------
+R5
+enable
+conf t
+no ip domain-lookup
+hostname R5
+do wr
+
+interface f0/0
+ip address 182.178.1.2 255.255.255.248
+
+no shutdown
+
+interface f0/1
+ip address 182.178.0.2 255.255.255.0
+standby 10 ip 182.178.0.1  
+standby 10 priority 150
+standby 10 preempt
+no shutdown
+
+do wr
+
+----------------------------------------------
+R6
+enable
+conf t
+no ip domain-lookup
+hostname R6
+do wr
+
+interface f0/0
+ip address 182.178.2.2 255.255.255.248
+
+no shutdown
+
+interface f0/1
+ip address 182.178.0.3 255.255.255.0
+standby 10 ip 182.178.0.1
+no shutdown
+
+do wr
+
+---------------------------
+SWT 1
+
+enable
+conf t
+interface range fa0/3 - 4
+channel-group 1 mode desirable
+exit
+interface port-channel 1
+switchport mode trunk
+exit
+do wr
+
+SWT 0
+
+enable
+configure terminal
+interface range fa0/3 - 4
+channel-group 1 mode auto
+exit
+interface port-channel 1
+switchport mode trunk
+exit
+do wr 
+
+SWT 2
+
+enable
+configure terminal
+interface range fa0/3 - 4
+channel-group 1 mode active
+exit
+interface port-channel 1
+switchport mode trunk
+exit
+do wr
+
+SWT 3
+
+enable
+configure terminal
+interface range fa0/3 - 4
+channel-group 1 mode passive
+exit
+interface port-channel 1
+switchport mode trunk
+exit
+do wr
+
+--------------------------------------
+R1
+IP route
+
+enable
+configure terminal
+
+ip route 182.168.1.0 255.255.255.248 182.168.1.1
+ip route 182.168.2.0 255.255.255.248 182.168.2.1
+ip route 182.168.0.0 255.255.255.0 182.168.1.1
+ip route 182.168.0.0 255.255.255.0 182.168.2.1
+ip route 10.0.0.0 255.255.255.252 10.0.0.2
+ip route 182.178.1.0 255.255.255.248 10.0.0.2
+ip route 182.178.2.0 255.255.255.248 10.0.0.2
+ip route 182.178.0.0 255.255.255.0 10.0.0.2
+do write
+end
+write memory
+
+R4
+
+enable
+configure terminal
+
+ip route 182.178.1.0 255.255.255.248 182.178.1.2
+ip route 182.178.2.0 255.255.255.248 182.178.2.2
+ip route 182.178.0.0 255.255.255.0 182.178.1.2
+ip route 182.178.0.0 255.255.255.0 182.178.2.2
+ip route 10.0.0.0 255.255.255.252 10.0.0.1
+ip route 182.168.1.0 255.255.255.248 10.0.0.1
+ip route 182.168.2.0 255.255.255.248 10.0.0.1
+ip route 182.168.0.0 255.255.255.0 10.0.0.1
+do wr
+
+end
+write memory
+
+R2
+
+enable
+configure terminal
+
+ip route 182.168.1.0 255.255.255.248 182.168.1.2
+ip route 10.0.0.0 255.255.255.252 182.168.1.2
+ip route 182.178.1.0 255.255.255.248 182.168.1.2
+ip route 182.178.2.0 255.255.255.248 182.168.1.2
+ip route 182.178.0.0 255.255.255.0 182.168.1.2
+do wr
+end
+write memory
+
+R3
+
+enable
+configure terminal
+
+ip route 182.168.2.0 255.255.255.248 182.168.2.2
+ip route 10.0.0.0 255.255.255.252 182.168.2.2
+ip route 182.178.1.0 255.255.255.248 182.168.2.2
+ip route 182.178.2.0 255.255.255.248 182.168.2.2
+ip route 182.178.0.0 255.255.255.0 182.168.2.2
+do wr
+end
+write memory
+
+R5
+
+enable
+configure terminal
+
+ip route 182.178.1.0 255.255.255.248 182.178.1.1
+ip route 10.0.0.0 255.255.255.252 182.178.1.1
+ip route 182.168.1.0 255.255.255.248 182.178.1.1
+ip route 182.168.2.0 255.255.255.248 182.178.1.1
+ip route 182.168.0.0 255.255.255.0 182.178.1.1
+do wr
+end
+write memory
+
+R6
+
+enable
+configure terminal
+
+ip route 182.178.2.0 255.255.255.248 182.178.2.1
+ip route 10.0.0.0 255.255.255.252 182.178.2.1
+ip route 182.168.1.0 255.255.255.248 182.178.2.1
+ip route 182.168.2.0 255.255.255.248 182.178.2.1
+ip route 182.168.0.0 255.255.255.0 182.178.2.1
+do wr
+end
+write memory
