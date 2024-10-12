@@ -318,7 +318,7 @@ write memory
 ```
 ### Configuracion Portchanel con PAGP switches SW0-SW1
 
-![alt text](pagp.png)
+![alt text](PAGP.png)
 
 ### Configuracion Portchanel LACP switches SW2-SW3. 
 
